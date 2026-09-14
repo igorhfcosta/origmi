@@ -1,7 +1,7 @@
 import { ContactShadows, Environment, OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Suspense } from 'react'
-import { squarePracticeModel } from '../data/origamiModel'
+import { activeOrigamiModel } from '../data/origamiModel'
 import { tutorialSteps } from '../data/tutorial'
 import type { TutorialStep } from '../engine/types'
 import { useTutorialStore } from '../store/useTutorialStore'
@@ -26,7 +26,7 @@ export function OrigamiScene({ step }: OrigamiSceneProps) {
         <Suspense fallback={null}>
           <group position={[0, 0.12, 0]}>
             <OrigamiModel
-              model={squarePracticeModel}
+              model={activeOrigamiModel}
               steps={tutorialSteps}
               stepIndex={currentStep}
               replayToken={replayToken}
@@ -40,6 +40,9 @@ export function OrigamiScene({ step }: OrigamiSceneProps) {
         </Suspense>
         <OrbitControls makeDefault enablePan={false} minDistance={4.8} maxDistance={10} minPolarAngle={0.35} maxPolarAngle={1.45} target={[0, 0, 0]} />
       </Canvas>
+      <div className="scene-status" aria-label="Modelo FOLD carregado">
+        <span />dog.fold carregado
+      </div>
       <div className="scene-hint" aria-hidden="true">
         <span>Arraste para girar</span><span>•</span><span>Scroll para zoom</span>
       </div>

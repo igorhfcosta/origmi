@@ -1,31 +1,64 @@
-import type { OrigamiModelDefinition } from '../engine/types'
+import { importFoldModel } from '../engine/foldImporter'
+import dogFoldSource from './models/dog.fold?raw'
+import squarePracticeFoldSource from './models/square-practice.fold?raw'
 
-export const squarePracticeModel: OrigamiModelDefinition = {
+export { dogFoldSource, squarePracticeFoldSource }
+
+export const squarePracticeModel = importFoldModel(squarePracticeFoldSource, {
   id: 'quadrado-duas-dobras',
   name: 'Quadrado — duas dobras',
-  faces: [
-    { id: 'top-left', vertices: [[-2, 0], [0, 0], [0, 2], [-2, 2]], color: '#f3ead9' },
-    { id: 'top-right', vertices: [[0, 0], [2, 0], [2, 2], [0, 2]], color: '#fff9ed' },
-    { id: 'bottom-left', vertices: [[-2, -2], [0, -2], [0, 0], [-2, 0]], color: '#efe5d3' },
-    { id: 'bottom-right', vertices: [[0, -2], [2, -2], [2, 0], [0, 0]], color: '#faf3e5' },
-  ],
+  faceColors: ['#efe5d3', '#faf3e5', '#f3ead9', '#fff9ed'],
   creases: [
     {
       id: 'vertical-center',
       label: 'Vinco vertical central',
-      start: [0, -2],
-      end: [0, 2],
-      affectedFaces: ['top-right', 'bottom-right'],
-      direction: 'valley',
+      edgeIndices: [8, 9],
+      affectedFaces: [1, 3],
     },
     {
       id: 'horizontal-left',
       label: 'Vinco horizontal da folha dobrada',
-      start: [-2, 0],
-      end: [0, 0],
-      affectedFaces: ['top-left', 'top-right'],
-      direction: 'valley',
+      edgeIndices: [2],
+      affectedFaces: [2, 3],
     },
   ],
   foldOrder: ['vertical-center', 'horizontal-left'],
-}
+})
+
+export const dogModel = importFoldModel(dogFoldSource, {
+  id: 'cachorro-simples',
+  name: 'Cachorro de origami',
+  faceColors: ['#d6a66c', '#8b5a3c', '#e9be82', '#8b5a3c'],
+  faceRenderOrder: [0, 2, 1, 2],
+  creases: [
+    {
+      id: 'base-diagonal',
+      label: 'Dobra diagonal da base',
+      edgeIndices: [0, 1, 2],
+      affectedFaces: [1, 2, 3],
+      referenceFace: 2,
+    },
+    {
+      id: 'left-ear',
+      label: 'Dobra da orelha esquerda',
+      edgeIndices: [9],
+      affectedFaces: [1],
+      referenceFace: 1,
+    },
+    {
+      id: 'right-ear',
+      label: 'Dobra da orelha direita',
+      edgeIndices: [10],
+      affectedFaces: [3],
+      referenceFace: 3,
+    },
+  ],
+  foldOrder: ['base-diagonal', 'left-ear', 'right-ear'],
+  decorations: [
+    { id: 'left-eye', face: 2, kind: 'circle', position: [-0.48, 0.72], size: 0.105, color: '#211713', surface: 'back', showFromStep: 1 },
+    { id: 'right-eye', face: 2, kind: 'circle', position: [0.48, 0.72], size: 0.105, color: '#211713', surface: 'back', showFromStep: 1 },
+    { id: 'nose', face: 2, kind: 'circle', position: [0, 1.55], size: 0.17, color: '#211713', surface: 'back', showFromStep: 1 },
+  ],
+})
+
+export const activeOrigamiModel = dogModel

@@ -2,23 +2,29 @@
 
 Protótipo de uma plataforma web para aprender origami com instruções passo a passo e animações 3D interativas.
 
-## MVP 02
+## MVP 03
 
-Esta versão transforma a primeira demonstração em um motor de dobras orientado a dados:
+Esta versão transforma o motor técnico em um primeiro tutorial de origami completo:
 
-- folha dividida em faces independentes cadastradas por vértices;
-- vincos com eixo, direção e conjunto de faces afetadas;
-- composição de duas dobras acumuladas em uma única sequência;
+- importador validado para arquivos `.fold` JSON;
+- leitura de `vertices_coords`, `edges_vertices`, `edges_assignment` e `faces_vertices`;
+- união de vários segmentos colineares em um único vinco animável;
+- mensagens claras para arquivos inválidos ou ainda não suportados;
+- cachorro de origami carregado de `dog.fold`;
+- dobra da base e duas orelhas em sequência;
+- eixos de vincos posteriores reposicionados pelas dobras anteriores;
+- olhos e nariz vinculados à face correta;
 - estados anterior, atual e de repetição calculados pelo motor;
-- validação estrutural do modelo;
 - câmera orbitável e zoom;
 - linhas de vinco e setas geradas a partir dos dados;
 - etapas anterior / repetir / próxima;
 - controle de velocidade;
 - primeiro experimento do **Modo Matemática**;
 - suporte a `prefers-reduced-motion`;
-- testes unitários da matemática da dobra e do estado do tutorial;
+- testes unitários da importação, matemática da dobra e estado do tutorial;
 - CI com checagem TypeScript, testes e build.
+
+O formato segue a [especificação FOLD 1.2](https://github.com/edemaine/fold/blob/main/doc/spec.md). A geometria fica no arquivo FOLD; as decisões pedagógicas — texto, ordem e faces movimentadas — permanecem em dados separados do tutorial.
 
 ## Stack
 
@@ -45,8 +51,8 @@ npm run build
 
 ## Próximos marcos
 
-1. importar geometria no formato FOLD;
-2. criar o primeiro origami simples completo;
-3. adicionar câmeras específicas por etapa;
-4. biblioteca de modelos;
-5. editor visual de passos.
+1. adicionar enquadramentos de câmera específicos por etapa;
+2. criar a biblioteca de modelos;
+3. permitir upload local de arquivos FOLD;
+4. suportar squash/reverse folds;
+5. criar o editor visual de passos.

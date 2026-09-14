@@ -14,7 +14,7 @@ describe('useTutorialStore', () => {
     store.nextStep()
     store.nextStep()
     store.nextStep()
-    expect(useTutorialStore.getState().currentStep).toBe(4)
+    expect(useTutorialStore.getState().currentStep).toBe(5)
   })
 
   it('does not move before the first step', () => {
