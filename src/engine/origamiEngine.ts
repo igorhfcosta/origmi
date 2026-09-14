@@ -8,6 +8,10 @@ import type {
 } from './types'
 
 export type FoldAngles = Record<string, number>
+
+export function resolveFinishState(steps: readonly TutorialStep[], stepIndex: number): boolean | undefined {
+  return steps.some((step) => step.finish) ? Boolean(steps[stepIndex]?.finish) : undefined
+}
 export interface ResolvedCreaseAxis {
   start: Point3D
   end: Point3D
@@ -38,6 +42,7 @@ export function resolveReplayAngles(
   steps: readonly TutorialStep[],
   stepIndex: number,
 ): FoldAngles {
+  if (steps[stepIndex]?.finish) return resolveFoldAngles(model, steps, stepIndex)
   for (let index = Math.min(stepIndex, steps.length - 1); index >= 0; index -= 1) {
     if (steps[index].fold) return resolveFoldAngles(model, steps, index - 1)
   }

@@ -2,12 +2,13 @@ import { Edges, Line } from '@react-three/drei'
 import gsap from 'gsap'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useRef } from 'react'
-import { DoubleSide, Group, Shape, Vector3 } from 'three'
+import { Color, DoubleSide, Group, Mesh, MeshStandardMaterial, Shape, Vector3 } from 'three'
 import { durationForSpeed } from '../engine/foldMath'
 import {
   creasesForFace,
   resolveCreaseAxes,
   resolveFoldAngles,
+  resolveFinishState,
   resolveReplayAngles,
   signedFoldAngle,
 } from '../engine/origamiEngine'
@@ -101,7 +102,59 @@ function FoldPivot({
   )
 }
 
-function PaperFaceMesh({ face, layer, decorations, stepIndex }: { face: PaperFace; layer: number; decorations: readonly FaceDecoration[]; stepIndex: number }) {
+function AnimatedDecoration({ decoration, order, speed }: { decoration: FaceDecoration; order: number; speed: PlaybackSpeed }) {
+  const meshRef = useRef<Mesh>(null)
+  const reducedMotion = useReducedMotion()
+  useEffect(() => {
+    const mesh = meshRef.current
+    if (!mesh) return
+    const tween = gsap.to(mesh.scale, {
+      x: 1, y: 1, z: 1,
+      duration: durationForSpeed(reducedMotion ? 0.01 : 0.35, speed),
+      delay: reducedMotion ? 0 : (0.7 + order * 0.35) / speed,
+      ease: 'power2.out',
+    })
+    return () => { tween.kill() }
+  }, [order, reducedMotion, speed])
+  return (
+    <mesh ref={meshRef} scale={0} renderOrder={20}
+      position={[decoration.position[0], decoration.position[1], decoration.surface === 'back' ? -0.022 : 0.022]}>
+      <circleGeometry args={[decoration.size, 32]} />
+      <meshBasicMaterial color={decoration.color} side={DoubleSide} depthTest={false} depthWrite={false} />
+    </mesh>
+  )
+}
+
+function PaperFaceMesh({ face, layer, decorations, stepIndex, finish, speed, replayToken }: {
+  face: PaperFace; layer: number; decorations: readonly FaceDecoration[]; stepIndex: number;
+  finish?: boolean; speed: PlaybackSpeed; replayToken: number;
+}) {
+  const materialRef = useRef<MeshStandardMaterial>(null)
+  const previousReplay = useRef(replayToken)
+  const reducedMotion = useReducedMotion()
+  const initialColor = useRef(finish === undefined ? face.color ?? '#f7efe1' : '#f7efe1')
+  useEffect(() => {
+    const material = materialRef.current
+    if (!material) return
+    const replay = previousReplay.current !== replayToken
+    previousReplay.current = replayToken
+    const color = new Color(finish === false ? '#f7efe1' : face.color ?? '#f7efe1')
+    if (finish && replay) {
+      material.color.set('#f7efe1')
+      material.emissive.set('#f7efe1')
+    }
+    if (finish === false) {
+      material.color.copy(color)
+      material.emissive.copy(color)
+      return
+    }
+    const tween = gsap.to(material.color, {
+      r: color.r, g: color.g, b: color.b,
+      duration: durationForSpeed(reducedMotion ? 0.01 : 0.7, speed),
+      onUpdate: () => material.emissive.copy(material.color),
+    })
+    return () => { tween.kill() }
+  }, [face.color, finish, reducedMotion, replayToken, speed])
   const shape = useMemo(() => {
     const paperShape = new Shape()
     face.vertices.forEach(([x, y], index) => {
@@ -117,8 +170,9 @@ function PaperFaceMesh({ face, layer, decorations, stepIndex }: { face: PaperFac
       <mesh receiveShadow castShadow renderOrder={face.renderOrder ?? layer}>
         <shapeGeometry args={[shape]} />
         <meshStandardMaterial
-          color={face.color ?? '#f7efe1'}
-          emissive={face.color ?? '#f7efe1'}
+          ref={materialRef}
+          color={initialColor.current}
+          emissive={initialColor.current}
           emissiveIntensity={0.13}
           roughness={0.82}
           side={DoubleSide}
@@ -129,15 +183,8 @@ function PaperFaceMesh({ face, layer, decorations, stepIndex }: { face: PaperFac
         />
         <Edges color="#6e6678" threshold={15} depthTest={false} />
       </mesh>
-      {decorations.filter((decoration) => stepIndex >= (decoration.showFromStep ?? 0)).map((decoration) => (
-        <mesh
-          key={decoration.id}
-          renderOrder={20}
-          position={[decoration.position[0], decoration.position[1], decoration.surface === 'back' ? -0.022 : 0.022]}
-        >
-          <circleGeometry args={[decoration.size, 32]} />
-          <meshBasicMaterial color={decoration.color} side={DoubleSide} depthTest={false} depthWrite={false} />
-        </mesh>
+      {finish !== false && decorations.filter((decoration) => stepIndex >= (decoration.showFromStep ?? 0)).map((decoration, order) => (
+        <AnimatedDecoration key={`${decoration.id}-${replayToken}`} decoration={decoration} order={order} speed={speed} />
       ))}
     </group>
   )
@@ -219,6 +266,9 @@ export function OrigamiModel({
             layer={layer}
             decorations={model.decorations?.filter((decoration) => decoration.faceId === face.id) ?? []}
             stepIndex={stepIndex}
+            finish={resolveFinishState(steps, stepIndex)}
+            speed={speed}
+            replayToken={replayToken}
           />
         )
 

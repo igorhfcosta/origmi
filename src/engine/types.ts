@@ -60,6 +60,7 @@ export interface FoldGuide {
 }
 
 export interface TutorialStep {
+  finish?: boolean
   id: string
   eyebrow: string
   title: string
