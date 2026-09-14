@@ -13,6 +13,35 @@ import {
 } from './origamiEngine'
 
 describe('origamiEngine', () => {
+  const samples = [0, 30, 60, 90, 120, 150, 180]
+  for (const creaseId of ['base-diagonal', 'left-ear', 'right-ear']) {
+    it.each(samples)(`keeps every shared dog vertex joined during ${creaseId} at %s degrees`, (angle) => {
+      const angles = {
+        'base-diagonal': creaseId === 'base-diagonal' ? angle : 180,
+        'left-ear': creaseId === 'left-ear' ? angle : creaseId === 'right-ear' ? 180 : 0,
+        'right-ear': creaseId === 'right-ear' ? angle : 0,
+      }
+      const positions = new Map<string, readonly number[]>()
+      for (const face of dogModel.faces) {
+        for (const [x, y] of face.vertices) {
+          const key = `${x},${y}`
+          const point = transformPointForFace(dogModel, face.id, [x, y, 0], angles)
+          const previous = positions.get(key)
+          if (previous) point.forEach((value, index) => expect(value).toBeCloseTo(previous[index], 8))
+          else positions.set(key, point)
+        }
+      }
+    })
+  }
+
+  it('partitions one complete square without changing its area', () => {
+    const area = dogModel.faces.reduce((sum, face) => sum + Math.abs(face.vertices.reduce((cross, [x, y], i) => {
+      const next = face.vertices[(i + 1) % face.vertices.length]
+      return cross + x * next[1] - y * next[0]
+    }, 0)) / 2, 0)
+    expect(area).toBeCloseTo(8, 8)
+  })
+
   it('starts with every crease open', () => {
     expect(resolveFoldAngles(squarePracticeModel, squarePracticeSteps, 0)).toEqual({
       'vertical-center': 0,

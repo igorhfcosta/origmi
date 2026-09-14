@@ -113,7 +113,7 @@ function PaperFaceMesh({ face, layer, decorations, stepIndex }: { face: PaperFac
   }, [face.vertices])
 
   return (
-    <group position={[0, 0, layer * 0.006]}>
+    <group>
       <mesh receiveShadow castShadow renderOrder={face.renderOrder ?? layer}>
         <shapeGeometry args={[shape]} />
         <meshStandardMaterial
