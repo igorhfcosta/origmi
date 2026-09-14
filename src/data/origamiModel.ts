@@ -28,8 +28,8 @@ export const squarePracticeModel = importFoldModel(squarePracticeFoldSource, {
 export const dogModel = importFoldModel(dogFoldSource, {
   id: 'cachorro-simples',
   name: 'Cachorro de origami',
-  faceColors: ['#d6a66c', '#8b5a3c', '#e9be82', '#8b5a3c'],
-  faceRenderOrder: [0, 2, 1, 2],
+  faceColors: ['#d6a66c', '#8b5a3c', '#e9be82', '#8b5a3c', '#8b5a3c', '#8b5a3c'],
+  faceRenderOrder: [0, 2, 1, 2, 3, 3],
   creases: [
     {
       id: 'base-diagonal',
@@ -42,14 +42,14 @@ export const dogModel = importFoldModel(dogFoldSource, {
       id: 'left-ear',
       label: 'Dobra da orelha esquerda',
       edgeIndices: [9],
-      affectedFaces: [1],
+      affectedFaces: [1, 4],
       referenceFace: 1,
     },
     {
       id: 'right-ear',
       label: 'Dobra da orelha direita',
       edgeIndices: [10],
-      affectedFaces: [3],
+      affectedFaces: [3, 5],
       referenceFace: 3,
     },
   ],

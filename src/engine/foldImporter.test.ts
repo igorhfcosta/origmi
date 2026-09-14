@@ -36,7 +36,7 @@ describe('foldImporter', () => {
       id: 'cachorro-simples',
       source: { format: 'FOLD', spec: 1.2, title: 'Cachorro de origami' },
     })
-    expect(dogModel.faces).toHaveLength(4)
+    expect(dogModel.faces).toHaveLength(6)
     expect(dogModel.creases.map((crease) => crease.id)).toEqual([
       'base-diagonal',
       'left-ear',
