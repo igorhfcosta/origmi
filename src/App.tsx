@@ -1,6 +1,7 @@
 import { OrigamiScene } from './components/OrigamiScene'
 import { TopBar } from './components/TopBar'
 import { TutorialPanel } from './components/TutorialPanel'
+import { activeOrigamiModel } from './data/origamiModel'
 import { tutorialSteps } from './data/tutorial'
 import { useTutorialStore } from './store/useTutorialStore'
 
@@ -15,10 +16,10 @@ export default function App() {
         <section className="viewer-column">
           <div className="viewer-heading">
             <div>
-              <span className="kicker">Fundamentos</span>
-              <h2>Motor de dobras</h2>
+              <span className="kicker">Primeiro origami completo</span>
+              <h2>{activeOrigamiModel.name}</h2>
             </div>
-            <span className="difficulty">● Fácil · 2 vincos · 4 faces</span>
+            <span className="difficulty">● Fácil · FOLD {activeOrigamiModel.source?.spec} · 3 dobras</span>
           </div>
           <OrigamiScene step={step} />
         </section>

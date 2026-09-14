@@ -1,6 +1,6 @@
 import type { TutorialStep } from '../engine/types'
 
-export const tutorialSteps: TutorialStep[] = [
+export const squarePracticeSteps: TutorialStep[] = [
   {
     id: 'observe',
     eyebrow: 'Preparação',
@@ -45,5 +45,63 @@ export const tutorialSteps: TutorialStep[] = [
     instruction: 'A folha terminou como um quadrado menor. Volte ou repita para conferir como cada conjunto de faces se move.',
     showGuide: false,
     mathNote: 'O lado foi reduzido à metade e a área visível passou de 16 para 4 unidades quadradas.',
+  },
+]
+
+export const tutorialSteps: TutorialStep[] = [
+  {
+    id: 'dog-prepare',
+    eyebrow: 'Preparação',
+    title: 'Comece pelo quadrado',
+    instruction: 'O arquivo dog.fold já trouxe os vértices, arestas, faces e vincos. A primeira dobra transforma o quadrado em um triângulo.',
+    showGuide: true,
+    guide: { creaseId: 'base-diagonal', arrowFrom: [0, 1.45], arrowTo: [0, 0.18] },
+    mathNote: 'A diagonal divide o quadrado em dois triângulos retângulos isósceles congruentes.',
+  },
+  {
+    id: 'dog-base-fold',
+    eyebrow: 'Dobra 1',
+    title: 'Forme um triângulo',
+    instruction: 'Leve a ponta superior até a ponta inferior. Toda a metade de cima gira em torno da diagonal horizontal.',
+    showGuide: true,
+    fold: { creaseId: 'base-diagonal', angle: 180, duration: 1.55 },
+    guide: { creaseId: 'base-diagonal', arrowFrom: [0, 1.45], arrowTo: [0, 0.18] },
+    mathNote: 'A dobra funciona como uma rotação espacial de 180° e, no plano final, como uma reflexão pela diagonal.',
+  },
+  {
+    id: 'dog-triangle-check',
+    eyebrow: 'Conferência',
+    title: 'Confira o triângulo',
+    instruction: 'As duas metades devem coincidir. As próximas linhas de dobra vieram das arestas vale registradas no arquivo FOLD.',
+    showGuide: false,
+    mathNote: 'As áreas das duas camadas são iguais: cada uma corresponde à metade do quadrado inicial.',
+  },
+  {
+    id: 'dog-left-ear',
+    eyebrow: 'Dobra 2',
+    title: 'Abaixe a orelha esquerda',
+    instruction: 'Dobre a ponta esquerda para baixo seguindo o vinco inclinado. O eixo foi reposicionado automaticamente após a primeira dobra.',
+    showGuide: true,
+    fold: { creaseId: 'left-ear', angle: 180, duration: 1.25 },
+    guide: { creaseId: 'left-ear', arrowFrom: [-1.72, -0.08], arrowTo: [-1.2, -1.2] },
+    mathNote: 'A nova posição da orelha é a reflexão da ponta em relação ao vinco inclinado.',
+  },
+  {
+    id: 'dog-right-ear',
+    eyebrow: 'Dobra 3',
+    title: 'Abaixe a orelha direita',
+    instruction: 'Repita o movimento do outro lado. As duas dobras são simétricas em relação ao eixo vertical da cabeça.',
+    showGuide: true,
+    fold: { creaseId: 'right-ear', angle: 180, duration: 1.25 },
+    guide: { creaseId: 'right-ear', arrowFrom: [1.72, -0.08], arrowTo: [1.2, -1.2] },
+    mathNote: 'Os dois vincos das orelhas são imagens espelhadas; por isso, produzem figuras congruentes.',
+  },
+  {
+    id: 'dog-finished',
+    eyebrow: 'Origami concluído',
+    title: 'Seu cachorro está pronto',
+    instruction: 'Gire o modelo, repita uma dobra ou volte pelas etapas. O rosto acompanha a face correta durante toda a animação.',
+    showGuide: false,
+    mathNote: 'O modelo combina simetria axial, congruência, reflexão e composição de rotações.',
   },
 ]

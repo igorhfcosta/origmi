@@ -3,10 +3,15 @@ import type {
   CreaseDefinition,
   FoldDirection,
   OrigamiModelDefinition,
+  Point3D,
   TutorialStep,
 } from './types'
 
 export type FoldAngles = Record<string, number>
+export interface ResolvedCreaseAxis {
+  start: Point3D
+  end: Point3D
+}
 
 export function createInitialFoldAngles(model: OrigamiModelDefinition): FoldAngles {
   return Object.fromEntries(model.creases.map((crease) => [crease.id, 0]))
@@ -58,6 +63,78 @@ export function signedFoldAngle(
   return degreesToRadians(degrees) * sign
 }
 
+export function rotatePointAroundAxis(
+  point: Point3D,
+  axis: ResolvedCreaseAxis,
+  angle: number,
+): Point3D {
+  const [px, py, pz] = point
+  const [sx, sy, sz] = axis.start
+  const [ex, ey, ez] = axis.end
+  const axisLength = Math.hypot(ex - sx, ey - sy, ez - sz)
+  if (axisLength < 1e-8) return point
+
+  const kx = (ex - sx) / axisLength
+  const ky = (ey - sy) / axisLength
+  const kz = (ez - sz) / axisLength
+  const vx = px - sx
+  const vy = py - sy
+  const vz = pz - sz
+  const cosine = Math.cos(angle)
+  const sine = Math.sin(angle)
+  const dot = kx * vx + ky * vy + kz * vz
+
+  return [
+    sx + vx * cosine + (ky * vz - kz * vy) * sine + kx * dot * (1 - cosine),
+    sy + vy * cosine + (kz * vx - kx * vz) * sine + ky * dot * (1 - cosine),
+    sz + vz * cosine + (kx * vy - ky * vx) * sine + kz * dot * (1 - cosine),
+  ]
+}
+
+export function resolveCreaseAxes(
+  model: OrigamiModelDefinition,
+  angles: FoldAngles,
+): Record<string, ResolvedCreaseAxis> {
+  const resolved: Record<string, ResolvedCreaseAxis> = {}
+
+  model.foldOrder.forEach((creaseId, creaseIndex) => {
+    const crease = model.creases.find((candidate) => candidate.id === creaseId)
+    if (!crease) return
+
+    let start: Point3D = [crease.start[0], crease.start[1], 0]
+    let end: Point3D = [crease.end[0], crease.end[1], 0]
+    const referenceFace = crease.referenceFace ?? crease.affectedFaces[0]
+
+    model.foldOrder.slice(0, creaseIndex).forEach((previousId) => {
+      const previousCrease = model.creases.find((candidate) => candidate.id === previousId)
+      const previousAxis = resolved[previousId]
+      if (!previousCrease || !previousAxis || !previousCrease.affectedFaces.includes(referenceFace)) return
+
+      const angle = signedFoldAngle(angles[previousId] ?? 0, previousCrease.direction)
+      start = rotatePointAroundAxis(start, previousAxis, angle)
+      end = rotatePointAroundAxis(end, previousAxis, angle)
+    })
+
+    resolved[creaseId] = { start, end }
+  })
+
+  return resolved
+}
+
+export function transformPointForFace(
+  model: OrigamiModelDefinition,
+  faceId: string,
+  point: Point3D,
+  angles: FoldAngles,
+): Point3D {
+  const axes = resolveCreaseAxes(model, angles)
+
+  return creasesForFace(model, faceId).reduce((transformedPoint, crease) => {
+    const angle = signedFoldAngle(angles[crease.id] ?? 0, crease.direction)
+    return rotatePointAroundAxis(transformedPoint, axes[crease.id], angle)
+  }, point)
+}
+
 export function validateOrigamiModel(model: OrigamiModelDefinition): string[] {
   const errors: string[] = []
   const faceIds = new Set(model.faces.map((face) => face.id))
@@ -77,6 +154,9 @@ export function validateOrigamiModel(model: OrigamiModelDefinition): string[] {
     crease.affectedFaces.forEach((faceId) => {
       if (!faceIds.has(faceId)) errors.push(`O vinco ${crease.id} referencia a face inexistente ${faceId}.`)
     })
+    if (crease.referenceFace && !faceIds.has(crease.referenceFace)) {
+      errors.push(`O vinco ${crease.id} possui uma face de referência inexistente.`)
+    }
   })
 
   model.foldOrder.forEach((creaseId) => {

@@ -1,0 +1,29 @@
+{
+  "file_spec": 1.2,
+  "file_creator": "OrigamiLab",
+  "file_author": "Igor Henrique Ferreira da Costa",
+  "file_title": "Quadrado — duas dobras",
+  "file_description": "Padrão de vinco didático usado para validar o importador FOLD do OrigamiLab.",
+  "file_classes": ["singleModel"],
+  "frame_classes": ["creasePattern"],
+  "frame_attributes": ["2D", "orientable", "convexFaces"],
+  "vertices_coords": [
+    [-2, -2], [0, -2], [2, -2],
+    [-2, 0],  [0, 0],  [2, 0],
+    [-2, 2],  [0, 2],  [2, 2]
+  ],
+  "edges_vertices": [
+    [0, 1], [1, 2], [3, 4], [4, 5], [6, 7], [7, 8],
+    [0, 3], [3, 6], [1, 4], [4, 7], [2, 5], [5, 8]
+  ],
+  "edges_assignment": [
+    "B", "B", "V", "F", "B", "B",
+    "B", "B", "V", "V", "B", "B"
+  ],
+  "faces_vertices": [
+    [0, 1, 4, 3],
+    [1, 2, 5, 4],
+    [3, 4, 7, 6],
+    [4, 5, 8, 7]
+  ]
+}

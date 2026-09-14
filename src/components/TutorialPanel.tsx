@@ -11,8 +11,9 @@ interface TutorialPanelProps {
 }
 
 export function TutorialPanel({ step }: TutorialPanelProps) {
-  const { currentStep, speed, mathMode, nextStep, previousStep, replayStep, setSpeed, toggleMathMode } = useTutorialStore()
+  const { currentStep, speed, mathMode, nextStep, previousStep, replayStep, setSpeed, toggleMathMode, reset } = useTutorialStore()
   const progress = ((currentStep + 1) / tutorialSteps.length) * 100
+  const isFinalStep = currentStep === tutorialSteps.length - 1
 
   return (
     <aside className="tutorial-panel">
@@ -47,7 +48,9 @@ export function TutorialPanel({ step }: TutorialPanelProps) {
       <div className="tutorial-actions">
         <button type="button" onClick={previousStep} disabled={currentStep === 0}><ArrowLeft size={18} />Voltar</button>
         <button className="replay" type="button" onClick={replayStep} disabled={!canReplayFold(tutorialSteps, currentStep)}><RotateCcw size={17} />Repetir</button>
-        <button className="primary" type="button" onClick={nextStep} disabled={currentStep === tutorialSteps.length - 1}>Próximo<ArrowRight size={18} /></button>
+        <button className="primary" type="button" onClick={isFinalStep ? reset : nextStep}>
+          {isFinalStep ? 'Recomeçar' : 'Próximo'}<ArrowRight size={18} />
+        </button>
       </div>
     </aside>
   )

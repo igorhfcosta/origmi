@@ -6,17 +6,20 @@ import { DoubleSide, Group, Shape, Vector3 } from 'three'
 import { durationForSpeed } from '../engine/foldMath'
 import {
   creasesForFace,
+  resolveCreaseAxes,
   resolveFoldAngles,
   resolveReplayAngles,
   signedFoldAngle,
 } from '../engine/origamiEngine'
 import type {
   CreaseDefinition,
+  FaceDecoration,
   FoldGuide,
   OrigamiModelDefinition,
   PaperFace,
   PlaybackSpeed,
   TutorialStep,
+  Point3D,
 } from '../engine/types'
 import { useReducedMotion } from './useReducedMotion'
 
@@ -32,6 +35,8 @@ interface OrigamiModelProps {
 
 interface FoldPivotProps {
   crease: CreaseDefinition
+  axisStart: Point3D
+  axisEnd: Point3D
   targetDegrees: number
   replayDegrees: number
   replayToken: number
@@ -42,6 +47,8 @@ interface FoldPivotProps {
 
 function FoldPivot({
   crease,
+  axisStart,
+  axisEnd,
   targetDegrees,
   replayDegrees,
   replayToken,
@@ -53,12 +60,12 @@ function FoldPivot({
   const tweenState = useRef({ angle: 0 })
   const previousReplayToken = useRef(replayToken)
   const reducedMotion = useReducedMotion()
-  const pivot = useMemo(() => new Vector3(crease.start[0], crease.start[1], 0), [crease.start])
+  const pivot = useMemo(() => new Vector3(...axisStart), [axisStart])
   const axis = useMemo(() => new Vector3(
-    crease.end[0] - crease.start[0],
-    crease.end[1] - crease.start[1],
-    0,
-  ).normalize(), [crease.end, crease.start])
+    axisEnd[0] - axisStart[0],
+    axisEnd[1] - axisStart[1],
+    axisEnd[2] - axisStart[2],
+  ).normalize(), [axisEnd, axisStart])
 
   useEffect(() => {
     const rotation = rotationRef.current
@@ -94,7 +101,7 @@ function FoldPivot({
   )
 }
 
-function PaperFaceMesh({ face, layer }: { face: PaperFace; layer: number }) {
+function PaperFaceMesh({ face, layer, decorations, stepIndex }: { face: PaperFace; layer: number; decorations: readonly FaceDecoration[]; stepIndex: number }) {
   const shape = useMemo(() => {
     const paperShape = new Shape()
     face.vertices.forEach(([x, y], index) => {
@@ -106,22 +113,35 @@ function PaperFaceMesh({ face, layer }: { face: PaperFace; layer: number }) {
   }, [face.vertices])
 
   return (
-    <mesh position={[0, 0, layer * 0.006]} receiveShadow castShadow>
-      <shapeGeometry args={[shape]} />
-      <meshStandardMaterial
-        color={face.color ?? '#f7efe1'}
-        roughness={0.82}
-        side={DoubleSide}
-        polygonOffset
-        polygonOffsetFactor={-layer}
-      />
-      <Edges color="#6e6678" threshold={15} />
-    </mesh>
+    <group position={[0, 0, layer * 0.006]}>
+      <mesh receiveShadow castShadow renderOrder={face.renderOrder ?? layer}>
+        <shapeGeometry args={[shape]} />
+        <meshStandardMaterial
+          color={face.color ?? '#f7efe1'}
+          roughness={0.82}
+          side={DoubleSide}
+          polygonOffset
+          polygonOffsetFactor={-layer}
+          depthTest={false}
+          depthWrite={false}
+        />
+        <Edges color="#6e6678" threshold={15} depthTest={false} />
+      </mesh>
+      {decorations.filter((decoration) => stepIndex >= (decoration.showFromStep ?? 0)).map((decoration) => (
+        <mesh
+          key={decoration.id}
+          renderOrder={20}
+          position={[decoration.position[0], decoration.position[1], decoration.surface === 'back' ? -0.022 : 0.022]}
+        >
+          <circleGeometry args={[decoration.size, 32]} />
+          <meshBasicMaterial color={decoration.color} side={DoubleSide} depthTest={false} depthWrite={false} />
+        </mesh>
+      ))}
+    </group>
   )
 }
 
-function FoldGuideOverlay({ model, guide }: { model: OrigamiModelDefinition; guide: FoldGuide }) {
-  const crease = model.creases.find((candidate) => candidate.id === guide.creaseId)
+function FoldGuideOverlay({ axis, guide }: { axis?: { start: Point3D; end: Point3D }; guide: FoldGuide }) {
   const arrow = useMemo(() => {
     const [fromX, fromY] = guide.arrowFrom
     const [toX, toY] = guide.arrowTo
@@ -150,12 +170,12 @@ function FoldGuideOverlay({ model, guide }: { model: OrigamiModelDefinition; gui
     }
   }, [guide.arrowFrom, guide.arrowTo])
 
-  if (!crease) return null
+  if (!axis) return null
 
   return (
     <group>
       <Line
-        points={[[...crease.start, 0.04], [...crease.end, 0.04]]}
+        points={[axis.start, axis.end]}
         color="#9b78ff"
         lineWidth={2}
         dashed
@@ -185,18 +205,28 @@ export function OrigamiModel({
     () => resolveReplayAngles(model, steps, stepIndex),
     [model, stepIndex, steps],
   )
+  const targetAxes = useMemo(() => resolveCreaseAxes(model, targetAngles), [model, targetAngles])
   const activeDuration = steps[stepIndex]?.fold?.duration
 
   return (
     <group rotation={[-Math.PI / 2, 0, 0]}>
       {model.faces.map((face, layer) => {
-        let foldedFace: ReactNode = <PaperFaceMesh face={face} layer={layer} />
+        let foldedFace: ReactNode = (
+          <PaperFaceMesh
+            face={face}
+            layer={layer}
+            decorations={model.decorations?.filter((decoration) => decoration.faceId === face.id) ?? []}
+            stepIndex={stepIndex}
+          />
+        )
 
         creasesForFace(model, face.id).forEach((crease) => {
           foldedFace = (
             <FoldPivot
               key={`${face.id}-${crease.id}`}
               crease={crease}
+              axisStart={targetAxes[crease.id]?.start ?? [crease.start[0], crease.start[1], 0]}
+              axisEnd={targetAxes[crease.id]?.end ?? [crease.end[0], crease.end[1], 0]}
               targetDegrees={targetAngles[crease.id] ?? 0}
               replayDegrees={replayAngles[crease.id] ?? 0}
               replayToken={replayToken}
@@ -211,7 +241,7 @@ export function OrigamiModel({
         return <group key={face.id}>{foldedFace}</group>
       })}
 
-      {showGuide && guide && <FoldGuideOverlay model={model} guide={guide} />}
+      {showGuide && guide && <FoldGuideOverlay axis={targetAxes[guide.creaseId]} guide={guide} />}
     </group>
   )
 }
