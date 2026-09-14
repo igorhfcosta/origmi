@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700&display=swap');
+
+:root { font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #f5f1fb; background: #121017; font-synthesis: none; text-rendering: optimizeLegibility; }
+* { box-sizing: border-box; }
+html { background: #121017; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+button, input { font: inherit; }
+button { color: inherit; }
+button:focus-visible, a:focus-visible { outline: 3px solid #a886ff; outline-offset: 3px; }
+.app { min-height: 100vh; background: radial-gradient(circle at 80% -10%, rgba(121, 80, 210, 0.18), transparent 35%), #121017; }
+.topbar { height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; border-bottom: 1px solid rgba(255,255,255,0.075); background: rgba(18,16,23,0.82); backdrop-filter: blur(18px); }
+.brand { display: inline-flex; align-items: center; gap: 11px; color: #f8f4ff; text-decoration: none; font: 700 19px/1 'Manrope', sans-serif; letter-spacing: -0.025em; }
+.brand-mark { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 11px; background: linear-gradient(145deg, #8d68ed, #5d38b7); box-shadow: 0 8px 28px rgba(112,74,210,.28); }
+.prototype-badge { display: inline-flex; align-items: center; gap: 7px; color: #bfb5cf; padding: 7px 10px; border: 1px solid rgba(255,255,255,.08); border-radius: 999px; font-size: 12px; }
+.workspace { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 22px; max-width: 1440px; margin: 0 auto; padding: 26px 30px 32px; }
+.viewer-column { min-width: 0; }
+.viewer-heading { min-height: 58px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.kicker { display: block; margin-bottom: 4px; color: #8f7ba9; text-transform: uppercase; letter-spacing: .15em; font-size: 10px; font-weight: 700; }
+.viewer-heading h2 { margin: 0; font: 700 22px/1.2 'Manrope', sans-serif; letter-spacing: -0.03em; }
+.difficulty { color: #9f93b1; font-size: 12px; }
+.scene-shell { position: relative; height: min(72vh, 720px); min-height: 500px; overflow: hidden; border-radius: 24px; border: 1px solid rgba(255,255,255,.075); background: #1b1725; box-shadow: 0 28px 80px rgba(0,0,0,.28); }
+.scene-shell canvas { touch-action: none; }
+.scene-hint { position: absolute; left: 50%; bottom: 17px; transform: translateX(-50%); display: flex; gap: 8px; padding: 8px 11px; border: 1px solid rgba(255,255,255,.07); border-radius: 999px; color: #aaa0b8; background: rgba(20,17,27,.68); backdrop-filter: blur(10px); font-size: 11px; pointer-events: none; }
+.tutorial-panel { align-self: start; margin-top: 70px; padding: 28px; border: 1px solid rgba(255,255,255,.075); border-radius: 24px; background: linear-gradient(180deg, rgba(32,28,41,.94), rgba(24,21,31,.96)); box-shadow: 0 28px 80px rgba(0,0,0,.22); }
+.step-meta { display: flex; justify-content: space-between; gap: 16px; color: #907bb0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
+.tutorial-panel h1 { margin: 15px 0 10px; font: 700 30px/1.08 'Manrope', sans-serif; letter-spacing: -.045em; }
+.instruction { min-height: 74px; margin: 0; color: #bdb5c8; font-size: 14px; line-height: 1.65; }
+.progress-track { height: 4px; margin: 23px 0; overflow: hidden; border-radius: 999px; background: #342c42; }
+.progress-track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #7551d4, #a383ff); transition: width .35s ease; }
+.math-card { width: 100%; display: flex; gap: 12px; align-items: flex-start; padding: 15px; text-align: left; border: 1px solid rgba(151,112,242,.16); border-radius: 16px; background: rgba(107,72,180,.075); cursor: pointer; transition: .2s ease; }
+.math-card:hover { border-color: rgba(166,130,255,.34); background: rgba(107,72,180,.12); }
+.math-card.active { border-color: rgba(166,130,255,.45); background: rgba(107,72,180,.16); }
+.math-card strong { display: block; margin-bottom: 4px; font-size: 13px; }
+.math-card small { display: block; color: #a99fb7; font-size: 11px; line-height: 1.45; }
+.math-icon { flex: 0 0 auto; width: 31px; height: 31px; display: grid; place-items: center; color: #b99cff; border-radius: 9px; background: rgba(147,100,255,.13); }
+.speed-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 22px 0; color: #9f95ac; font-size: 12px; }
+.speed-control { display: flex; padding: 3px; border-radius: 10px; background: #17131e; }
+.speed-control button { min-width: 38px; padding: 6px 7px; border: 0; border-radius: 8px; color: #786f83; background: transparent; cursor: pointer; font-size: 11px; }
+.speed-control button.active { color: #f4effb; background: #332a42; }
+.tutorial-actions { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; }
+.tutorial-actions button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; color: #c8c0d2; background: #211c2a; cursor: pointer; font-size: 12px; font-weight: 600; }
+.tutorial-actions .replay { padding: 0 11px; }
+.tutorial-actions .primary { color: #fff; border-color: transparent; background: linear-gradient(135deg, #805be0, #6741c2); }
+.tutorial-actions button:disabled { opacity: .32; cursor: not-allowed; }
+@media (max-width: 980px) { .workspace { grid-template-columns: 1fr; padding: 20px; } .tutorial-panel { margin-top: 0; } .scene-shell { height: 58vh; min-height: 420px; } }
+@media (max-width: 600px) { .topbar { height: 62px; padding: 0 16px; } .prototype-badge { display: none; } .workspace { padding: 14px; gap: 14px; } .viewer-heading { min-height: 48px; margin-bottom: 8px; } .scene-shell { min-height: 390px; height: 52vh; border-radius: 19px; } .tutorial-panel { padding: 21px; border-radius: 19px; } .tutorial-panel h1 { font-size: 25px; } .tutorial-actions { grid-template-columns: 1fr 46px 1fr; } .tutorial-actions .replay { font-size: 0; } .tutorial-actions .replay svg { margin: 0; } .scene-hint { white-space: nowrap; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
