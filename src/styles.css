@@ -20,8 +20,13 @@ button:focus-visible, a:focus-visible { outline: 3px solid #a886ff; outline-offs
 .difficulty { color: #9f93b1; font-size: 12px; }
 .scene-shell { position: relative; height: min(72vh, 720px); min-height: 500px; overflow: hidden; border-radius: 24px; border: 1px solid rgba(255,255,255,.075); background: #1b1725; box-shadow: 0 28px 80px rgba(0,0,0,.28); }
 .scene-shell canvas { touch-action: none; }
+.webgl-fallback { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; padding: 32px; text-align: center; color: #d7cfdf; background: radial-gradient(circle at 50% 42%, rgba(128,91,224,.14), transparent 32%), #1b1725; }
+.webgl-fallback-icon { width: 46px; height: 46px; display: grid; place-items: center; margin-bottom: 14px; border-radius: 14px; color: #c4aaff; background: rgba(128,91,224,.14); }
+.webgl-fallback strong { font: 700 17px/1.2 'Manrope', sans-serif; }
+.webgl-fallback p { max-width: 380px; margin: 9px 0 0; color: #9f95ac; font-size: 13px; line-height: 1.55; }
 .scene-status { position: absolute; top: 16px; left: 16px; display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border: 1px solid rgba(255,255,255,.08); border-radius: 999px; color: #b9afc6; background: rgba(20,17,27,.72); backdrop-filter: blur(10px); font-size: 11px; pointer-events: none; }
 .scene-status span { width: 7px; height: 7px; border-radius: 50%; background: #71d6a0; box-shadow: 0 0 0 4px rgba(113,214,160,.1); }
+.scene-status span.warning { background: #d7a356; box-shadow: 0 0 0 4px rgba(215,163,86,.1); }
 .scene-hint { position: absolute; left: 50%; bottom: 17px; transform: translateX(-50%); display: flex; gap: 8px; padding: 8px 11px; border: 1px solid rgba(255,255,255,.07); border-radius: 999px; color: #aaa0b8; background: rgba(20,17,27,.68); backdrop-filter: blur(10px); font-size: 11px; pointer-events: none; }
 .tutorial-panel { align-self: start; margin-top: 70px; padding: 28px; border: 1px solid rgba(255,255,255,.075); border-radius: 24px; background: linear-gradient(180deg, rgba(32,28,41,.94), rgba(24,21,31,.96)); box-shadow: 0 28px 80px rgba(0,0,0,.22); }
 .step-meta { display: flex; justify-content: space-between; gap: 16px; color: #907bb0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
