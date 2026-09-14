@@ -1,7 +1,8 @@
 import { ContactShadows, Environment, OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { AlertTriangle } from 'lucide-react'
-import { Suspense, useMemo } from 'react'
+import { AlertTriangle, Scan } from 'lucide-react'
+import { Suspense, useMemo, useRef } from 'react'
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { activeOrigamiModel } from '../data/origamiModel'
 import { tutorialSteps } from '../data/tutorial'
 import type { TutorialStep } from '../engine/types'
@@ -13,11 +14,23 @@ interface OrigamiSceneProps {
   step: TutorialStep
 }
 
+const defaultCameraPosition: [number, number, number] = [0, 6.8, 2.5]
+
 export function OrigamiScene({ step }: OrigamiSceneProps) {
   const speed = useTutorialStore((state) => state.speed)
   const replayToken = useTutorialStore((state) => state.replayToken)
   const currentStep = useTutorialStore((state) => state.currentStep)
   const webglAvailable = useMemo(supportsWebGL, [])
+  const controlsRef = useRef<OrbitControlsImpl>(null)
+
+  function resetCamera() {
+    const controls = controlsRef.current
+    if (!controls) return
+
+    controls.object.position.set(...defaultCameraPosition)
+    controls.target.set(0, 0, 0)
+    controls.update()
+  }
 
   return (
     <div
@@ -25,7 +38,7 @@ export function OrigamiScene({ step }: OrigamiSceneProps) {
       aria-label={webglAvailable ? 'Visualização 3D interativa da dobra' : 'Aviso de indisponibilidade da visualização 3D'}
     >
       {webglAvailable ? (
-        <Canvas shadows dpr={[1, 1.75]} camera={{ position: [5.2, 4.4, 5.8], fov: 39, near: 0.1, far: 100 }}>
+        <Canvas shadows dpr={[1, 1.75]} camera={{ position: defaultCameraPosition, fov: 39, near: 0.1, far: 100 }}>
           <color attach="background" args={['#1b1725']} />
           <fog attach="fog" args={['#1b1725', 8, 15]} />
           <ambientLight intensity={0.55} />
@@ -45,7 +58,16 @@ export function OrigamiScene({ step }: OrigamiSceneProps) {
             <ContactShadows position={[0, 0, 0]} opacity={0.42} scale={8} blur={2.6} far={4} />
             <Environment preset="studio" environmentIntensity={0.3} />
           </Suspense>
-          <OrbitControls makeDefault enablePan={false} minDistance={4.8} maxDistance={10} minPolarAngle={0.35} maxPolarAngle={1.45} target={[0, 0, 0]} />
+          <OrbitControls
+            ref={controlsRef}
+            makeDefault
+            enablePan={false}
+            minDistance={4.8}
+            maxDistance={10}
+            minPolarAngle={0.12}
+            maxPolarAngle={1.45}
+            target={[0, 0, 0]}
+          />
         </Canvas>
       ) : (
         <div className="webgl-fallback" role="status">
@@ -58,6 +80,12 @@ export function OrigamiScene({ step }: OrigamiSceneProps) {
         <span className={webglAvailable ? undefined : 'warning'} />
         {webglAvailable ? 'dog.fold carregado' : 'WebGL não detectado'}
       </div>
+      {webglAvailable && (
+        <button className="scene-view-button" type="button" onClick={resetCamera}>
+          <Scan size={15} />
+          Vista frontal
+        </button>
+      )}
       {webglAvailable && (
         <div className="scene-hint" aria-hidden="true">
           <span>Arraste para girar</span><span>•</span><span>Scroll para zoom</span>

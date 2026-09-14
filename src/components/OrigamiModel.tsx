@@ -118,6 +118,8 @@ function PaperFaceMesh({ face, layer, decorations, stepIndex }: { face: PaperFac
         <shapeGeometry args={[shape]} />
         <meshStandardMaterial
           color={face.color ?? '#f7efe1'}
+          emissive={face.color ?? '#f7efe1'}
+          emissiveIntensity={0.13}
           roughness={0.82}
           side={DoubleSide}
           polygonOffset
