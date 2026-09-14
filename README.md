@@ -2,14 +2,17 @@
 
 Protótipo de uma plataforma web para aprender origami com instruções passo a passo e animações 3D interativas.
 
-## MVP 01
+## MVP 02
 
-Esta primeira versão valida o núcleo do projeto:
+Esta versão transforma a primeira demonstração em um motor de dobras orientado a dados:
 
-- folha quadrada renderizada em 3D;
+- folha dividida em faces independentes cadastradas por vértices;
+- vincos com eixo, direção e conjunto de faces afetadas;
+- composição de duas dobras acumuladas em uma única sequência;
+- estados anterior, atual e de repetição calculados pelo motor;
+- validação estrutural do modelo;
 - câmera orbitável e zoom;
-- dobra central de 180° animada;
-- linha de vinco e guia visual;
+- linhas de vinco e setas geradas a partir dos dados;
 - etapas anterior / repetir / próxima;
 - controle de velocidade;
 - primeiro experimento do **Modo Matemática**;
@@ -42,9 +45,8 @@ npm run build
 
 ## Próximos marcos
 
-1. generalizar o motor para múltiplos vincos e faces;
-2. carregar a geometria a partir de dados em vez de componentes fixos;
-3. suporte ao formato FOLD;
-4. primeiro origami completo;
-5. biblioteca de modelos;
-6. editor visual de passos.
+1. importar geometria no formato FOLD;
+2. criar o primeiro origami simples completo;
+3. adicionar câmeras específicas por etapa;
+4. biblioteca de modelos;
+5. editor visual de passos.

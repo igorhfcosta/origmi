@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, RotateCcw, Sigma } from 'lucide-react'
 import { tutorialSteps } from '../data/tutorial'
+import { canReplayFold } from '../engine/origamiEngine'
 import type { PlaybackSpeed, TutorialStep } from '../engine/types'
 import { useTutorialStore } from '../store/useTutorialStore'
 
@@ -45,7 +46,7 @@ export function TutorialPanel({ step }: TutorialPanelProps) {
 
       <div className="tutorial-actions">
         <button type="button" onClick={previousStep} disabled={currentStep === 0}><ArrowLeft size={18} />Voltar</button>
-        <button className="replay" type="button" onClick={replayStep}><RotateCcw size={17} />Repetir</button>
+        <button className="replay" type="button" onClick={replayStep} disabled={!canReplayFold(tutorialSteps, currentStep)}><RotateCcw size={17} />Repetir</button>
         <button className="primary" type="button" onClick={nextStep} disabled={currentStep === tutorialSteps.length - 1}>Próximo<ArrowRight size={18} /></button>
       </div>
     </aside>
