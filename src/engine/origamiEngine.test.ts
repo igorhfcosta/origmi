@@ -6,6 +6,7 @@ import {
   creasesForFace,
   resolveCreaseAxes,
   resolveFoldAngles,
+  resolveFinishState,
   resolveReplayAngles,
   signedFoldAngle,
   transformPointForFace,
@@ -13,6 +14,27 @@ import {
 } from './origamiEngine'
 
 describe('origamiEngine', () => {
+  it('gives every dog step after preparation an action', () => {
+    expect(tutorialSteps).toHaveLength(5)
+    expect(tutorialSteps.slice(1).every((step) => Boolean(step.fold || step.finish))).toBe(true)
+    expect(tutorialSteps.slice(1, 4).every((step) => Boolean(step.fold))).toBe(true)
+  })
+
+  it('keeps the dog unpainted until finishing, including when going back', () => {
+    expect([0, 1, 2, 3, 4, 3, 0].map((index) => resolveFinishState(tutorialSteps, index)))
+      .toEqual([false, false, false, false, true, false, false])
+  })
+
+  it('replays only the finish without unfolding the ears', () => {
+    const finalIndex = tutorialSteps.length - 1
+    expect(resolveReplayAngles(dogModel, tutorialSteps, finalIndex))
+      .toEqual(resolveFoldAngles(dogModel, tutorialSteps, finalIndex))
+    expect(resolveReplayAngles(dogModel, tutorialSteps, finalIndex)['right-ear']).toBe(180)
+  })
+
+  it('preserves the appearance of tutorials without a finishing stage', () => {
+    expect(resolveFinishState(squarePracticeSteps, 0)).toBeUndefined()
+  })
   const samples = [0, 30, 60, 90, 120, 150, 180]
   for (const creaseId of ['base-diagonal', 'left-ear', 'right-ear']) {
     it.each(samples)(`keeps every shared dog vertex joined during ${creaseId} at %s degrees`, (angle) => {
