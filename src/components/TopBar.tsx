@@ -7,7 +7,7 @@ export function TopBar() {
         <span className="brand-mark"><Origami size={19} strokeWidth={1.8} /></span>
         <span>OrigamiLab</span>
       </a>
-      <div className="prototype-badge"><Sparkles size={14} />Protótipo 01</div>
+      <div className="prototype-badge"><Sparkles size={14} />Protótipo 02</div>
     </header>
   )
 }

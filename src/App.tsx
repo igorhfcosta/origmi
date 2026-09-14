@@ -16,9 +16,9 @@ export default function App() {
           <div className="viewer-heading">
             <div>
               <span className="kicker">Fundamentos</span>
-              <h2>Primeira dobra</h2>
+              <h2>Motor de dobras</h2>
             </div>
-            <span className="difficulty">● Fácil · ~1 min</span>
+            <span className="difficulty">● Fácil · 2 vincos · 4 faces</span>
           </div>
           <OrigamiScene step={step} />
         </section>

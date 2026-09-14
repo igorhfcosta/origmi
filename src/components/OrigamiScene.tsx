@@ -1,9 +1,11 @@
 import { ContactShadows, Environment, OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Suspense } from 'react'
+import { squarePracticeModel } from '../data/origamiModel'
+import { tutorialSteps } from '../data/tutorial'
 import type { TutorialStep } from '../engine/types'
 import { useTutorialStore } from '../store/useTutorialStore'
-import { FoldablePaper } from './FoldablePaper'
+import { OrigamiModel } from './OrigamiModel'
 
 interface OrigamiSceneProps {
   step: TutorialStep
@@ -12,6 +14,7 @@ interface OrigamiSceneProps {
 export function OrigamiScene({ step }: OrigamiSceneProps) {
   const speed = useTutorialStore((state) => state.speed)
   const replayToken = useTutorialStore((state) => state.replayToken)
+  const currentStep = useTutorialStore((state) => state.currentStep)
 
   return (
     <div className="scene-shell" aria-label="Visualização 3D interativa da dobra">
@@ -22,7 +25,15 @@ export function OrigamiScene({ step }: OrigamiSceneProps) {
         <directionalLight castShadow position={[3.5, 6, 4]} intensity={2.3} shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
         <Suspense fallback={null}>
           <group position={[0, 0.12, 0]}>
-            <FoldablePaper targetProgress={step.targetFold} direction={step.foldDirection ?? 'valley'} replayToken={replayToken} speed={speed} showGuide={step.showGuide} />
+            <OrigamiModel
+              model={squarePracticeModel}
+              steps={tutorialSteps}
+              stepIndex={currentStep}
+              replayToken={replayToken}
+              speed={speed}
+              guide={step.guide}
+              showGuide={step.showGuide}
+            />
           </group>
           <ContactShadows position={[0, 0, 0]} opacity={0.42} scale={8} blur={2.6} far={4} />
           <Environment preset="studio" environmentIntensity={0.3} />
