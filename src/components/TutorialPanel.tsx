@@ -1,5 +1,4 @@
 import { ArrowLeft, ArrowRight, RotateCcw, Sigma } from 'lucide-react'
-import { tutorialSteps } from '../data/tutorial'
 import { canReplayFold } from '../engine/origamiEngine'
 import type { PlaybackSpeed, TutorialStep } from '../engine/types'
 import { useTutorialStore } from '../store/useTutorialStore'
@@ -8,19 +7,20 @@ const speeds: PlaybackSpeed[] = [0.5, 1, 1.5, 2]
 
 interface TutorialPanelProps {
   step: TutorialStep
+  steps: readonly TutorialStep[]
 }
 
-export function TutorialPanel({ step }: TutorialPanelProps) {
+export function TutorialPanel({ step, steps }: TutorialPanelProps) {
   const { currentStep, speed, mathMode, nextStep, previousStep, replayStep, setSpeed, toggleMathMode, reset } = useTutorialStore()
-  const progress = ((currentStep + 1) / tutorialSteps.length) * 100
-  const isFinalStep = currentStep === tutorialSteps.length - 1
+  const progress = ((currentStep + 1) / steps.length) * 100
+  const isFinalStep = currentStep === steps.length - 1
 
   return (
     <aside className="tutorial-panel">
       <div>
         <div className="step-meta">
           <span>{step.eyebrow}</span>
-          <span>Etapa {currentStep + 1} de {tutorialSteps.length}</span>
+          <span>Etapa {currentStep + 1} de {steps.length}</span>
         </div>
         <h1>{step.title}</h1>
         <p className="instruction">{step.instruction}</p>
@@ -47,8 +47,8 @@ export function TutorialPanel({ step }: TutorialPanelProps) {
 
       <div className="tutorial-actions">
         <button type="button" onClick={previousStep} disabled={currentStep === 0}><ArrowLeft size={18} />Voltar</button>
-        <button className="replay" type="button" onClick={replayStep} disabled={!canReplayFold(tutorialSteps, currentStep)}><RotateCcw size={17} />Repetir</button>
-        <button className="primary" type="button" onClick={isFinalStep ? reset : nextStep}>
+        <button className="replay" type="button" onClick={replayStep} disabled={!canReplayFold(steps, currentStep)}><RotateCcw size={17} />Repetir</button>
+        <button className="primary" type="button" onClick={isFinalStep ? reset : () => nextStep(steps.length - 1)}>
           {isFinalStep ? 'Recomeçar' : 'Próximo'}<ArrowRight size={18} />
         </button>
       </div>

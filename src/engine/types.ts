@@ -59,6 +59,13 @@ export interface FoldGuide {
   arrowTo: Point2D
 }
 
+export interface CameraPose {
+  position: Point3D
+  target: Point3D
+  fov?: number
+  duration?: number
+}
+
 export interface TutorialStep {
   finish?: boolean
   id: string
@@ -69,4 +76,5 @@ export interface TutorialStep {
   fold?: FoldAction
   guide?: FoldGuide
   mathNote?: string
+  camera?: CameraPose
 }

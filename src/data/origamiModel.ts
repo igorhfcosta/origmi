@@ -60,5 +60,3 @@ export const dogModel = importFoldModel(dogFoldSource, {
     { id: 'nose', face: 2, kind: 'circle', position: [0, 1.55], size: 0.17, color: '#211713', surface: 'back', showFromStep: 1 },
   ],
 })
-
-export const activeOrigamiModel = dogModel

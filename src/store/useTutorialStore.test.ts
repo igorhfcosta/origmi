@@ -6,15 +6,21 @@ beforeEach(() => {
 })
 
 describe('useTutorialStore', () => {
-  it('moves through the tutorial without passing the final step', () => {
+  it('moves through a tutorial without passing the supplied final step', () => {
     const store = useTutorialStore.getState()
-    store.nextStep()
-    store.nextStep()
-    store.nextStep()
-    store.nextStep()
-    store.nextStep()
-    store.nextStep()
-    expect(useTutorialStore.getState().currentStep).toBe(4)
+    store.nextStep(2)
+    store.nextStep(2)
+    store.nextStep(2)
+    store.nextStep(2)
+    expect(useTutorialStore.getState().currentStep).toBe(2)
+  })
+
+  it('supports tutorials with different lengths', () => {
+    const store = useTutorialStore.getState()
+    store.nextStep(4)
+    store.nextStep(4)
+    store.nextStep(4)
+    expect(useTutorialStore.getState().currentStep).toBe(3)
   })
 
   it('does not move before the first step', () => {
@@ -23,7 +29,7 @@ describe('useTutorialStore', () => {
   })
 
   it('increments replay token without changing the current step', () => {
-    useTutorialStore.getState().nextStep()
+    useTutorialStore.getState().nextStep(4)
     useTutorialStore.getState().replayStep()
     expect(useTutorialStore.getState().currentStep).toBe(1)
     expect(useTutorialStore.getState().replayToken).toBe(1)
