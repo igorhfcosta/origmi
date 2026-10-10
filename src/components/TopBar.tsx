@@ -1,11 +1,12 @@
-import { BookOpen, Origami, Sparkles } from 'lucide-react'
+import { BookOpen, Origami, Pencil, Sparkles } from 'lucide-react'
 
 interface TopBarProps {
   inTutorial: boolean
   onHome: () => void
+  onEditor: () => void
 }
 
-export function TopBar({ inTutorial, onHome }: TopBarProps) {
+export function TopBar({ inTutorial, onHome, onEditor }: TopBarProps) {
   return (
     <header className="topbar">
       <button className="brand brand-button" type="button" onClick={onHome} aria-label="OrigamiLab — biblioteca">
@@ -13,13 +14,15 @@ export function TopBar({ inTutorial, onHome }: TopBarProps) {
         <span>OrigamiLab</span>
       </button>
       <div className="topbar-actions">
+        <button className="library-button" type="button" onClick={onEditor}><Pencil size={15} />Editor</button>
         {inTutorial && (
           <button className="library-button" type="button" onClick={onHome}>
             <BookOpen size={15} />Biblioteca
           </button>
         )}
-        <div className="prototype-badge"><Sparkles size={14} />MVP 04</div>
+        <div className="prototype-badge"><Sparkles size={14} />MVP 05</div>
       </div>
     </header>
   )
 }
+

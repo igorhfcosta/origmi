@@ -2,6 +2,9 @@ import { degreesToRadians } from './foldMath'
 import type {
   CreaseDefinition,
   FoldDirection,
+  FoldPhase,
+  SymmetricVertexMechanism,
+  VertexAction,
   OrigamiModelDefinition,
   Point3D,
   TutorialStep,
@@ -21,37 +24,112 @@ export function createInitialFoldAngles(model: OrigamiModelDefinition): FoldAngl
   return Object.fromEntries(model.creases.map((crease) => [crease.id, 0]))
 }
 
+export function phasesForStep(step?: TutorialStep): readonly FoldPhase[] {
+  if (!step) return []
+  if (step.phases) return step.phases
+  return step.fold ? [{ label: step.title, folds: [step.fold], duration: step.fold.duration }] : []
+}
+
+/** The constrained paths keep all four shared rays joined, including the closing seam. */
+export function resolveVertexAngles(
+  mechanism: SymmetricVertexMechanism,
+  action: Pick<VertexAction, 'mode' | 'angle'>,
+): [number, number, number] {
+  const angle = Math.min(180, Math.max(0, action.angle))
+  if (action.mode === 'book') return [angle, 0, angle]
+  if (action.mode === 'squash') return [180, angle, 180]
+  const follower = angle >= 180 ? 180 : 2 * Math.atan(
+    Math.tan(degreesToRadians(angle) / 2) / Math.cos(degreesToRadians(mechanism.sectorAngle)),
+  ) * 180 / Math.PI
+  const sign = action.mode === 'inside-reverse' ? 1 : -1
+  return [sign * angle, -sign * follower, -sign * angle]
+}
+
+export function resolvePhaseAngles(
+  model: OrigamiModelDefinition,
+  phase: FoldPhase,
+  from: FoldAngles,
+  progress = 1,
+): FoldAngles {
+  const t = Math.max(0, Math.min(1, progress))
+  const result = { ...from }
+  for (const fold of phase.folds ?? []) {
+    const crease = model.creases.find((candidate) => candidate.id === fold.creaseId)
+    if (!crease) continue
+    const target = fold.angle * (fold.direction && fold.direction !== crease.direction ? -1 : 1)
+    result[crease.id] = (from[crease.id] ?? 0) + (target - (from[crease.id] ?? 0)) * t
+  }
+  if (phase.vertex) {
+    const mechanism = model.mechanisms?.find((candidate) => candidate.id === phase.vertex?.mechanismId)
+    if (mechanism) {
+      const [driver, pocket] = mechanism.creases
+      const pocketDirection = model.creases.find((c) => c.id === pocket)?.direction === 'mountain' ? -1 : 1
+      const start = phase.vertex.mode === 'squash' ? (from[pocket] ?? 0) * pocketDirection : Math.abs(from[driver] ?? 0)
+      const angle = start + (phase.vertex.angle - start) * t
+      resolveVertexAngles(mechanism, { ...phase.vertex, angle }).forEach((value, index) => {
+        const crease = model.creases.find((candidate) => candidate.id === mechanism.creases[index])!
+        result[crease.id] = value * (crease.direction === 'valley' ? 1 : -1)
+      })
+    }
+  }
+  return result
+}
+
 export function resolveFoldAngles(
   model: OrigamiModelDefinition,
   steps: readonly TutorialStep[],
   stepIndex: number,
 ): FoldAngles {
-  const angles = createInitialFoldAngles(model)
+  let angles = createInitialFoldAngles(model)
   const finalIndex = Math.min(Math.max(stepIndex, -1), steps.length - 1)
-
   for (let index = 0; index <= finalIndex; index += 1) {
-    const fold = steps[index].fold
-    if (fold && fold.creaseId in angles) angles[fold.creaseId] = fold.angle
+    for (const phase of phasesForStep(steps[index])) angles = resolvePhaseAngles(model, phase, angles)
   }
-
   return angles
 }
 
-export function resolveReplayAngles(
-  model: OrigamiModelDefinition,
-  steps: readonly TutorialStep[],
-  stepIndex: number,
-): FoldAngles {
-  if (steps[stepIndex]?.finish) return resolveFoldAngles(model, steps, stepIndex)
+export function replayActionIndex(steps: readonly TutorialStep[], stepIndex: number): number {
+  if (steps[stepIndex]?.finish) return -1
   for (let index = Math.min(stepIndex, steps.length - 1); index >= 0; index -= 1) {
-    if (steps[index].fold) return resolveFoldAngles(model, steps, index - 1)
+    if (phasesForStep(steps[index]).length) return index
   }
+  return -1
+}
 
-  return createInitialFoldAngles(model)
+export function resolveReplayAngles(model: OrigamiModelDefinition, steps: readonly TutorialStep[], stepIndex: number): FoldAngles {
+  const index = replayActionIndex(steps, stepIndex)
+  return resolveFoldAngles(model, steps, index < 0 ? stepIndex : index - 1)
 }
 
 export function canReplayFold(steps: readonly TutorialStep[], stepIndex: number): boolean {
-  return steps.slice(0, stepIndex + 1).some((step) => Boolean(step.fold))
+  return Boolean(steps[stepIndex]?.finish) || replayActionIndex(steps, stepIndex) >= 0
+}
+
+export function resolveMovingFaceIds(model: OrigamiModelDefinition, steps: readonly TutorialStep[], stepIndex: number): readonly string[] {
+  const moving = new Set<string>()
+  let angles = resolveFoldAngles(model, steps, stepIndex - 1)
+  for (const phase of phasesForStep(steps[stepIndex])) {
+    if (!phase.vertex) {
+      for (const fold of phase.folds ?? []) {
+        const crease = model.creases.find((candidate) => candidate.id === fold.creaseId)
+        const target = resolvePhaseAngles(model, phase, angles)[fold.creaseId]
+        if (Math.abs(target - (angles[fold.creaseId] ?? 0)) > 1e-7) crease?.affectedFaces.forEach((id) => moving.add(id))
+      }
+    } else {
+      for (const progress of [0.5, 1]) {
+        const sampled = resolvePhaseAngles(model, phase, angles, progress)
+        for (const face of model.faces) {
+          if (face.vertices.some(([x, y]) => {
+            const before = transformPointForFace(model, face.id, [x, y, 0], angles)
+            const after = transformPointForFace(model, face.id, [x, y, 0], sampled)
+            return Math.hypot(...after.map((v, i) => v - before[i])) > 1e-6
+          })) moving.add(face.id)
+        }
+      }
+    }
+    angles = resolvePhaseAngles(model, phase, angles)
+  }
+  return [...moving]
 }
 
 export function creasesForFace(model: OrigamiModelDefinition, faceId: string): CreaseDefinition[] {
@@ -133,7 +211,13 @@ export function transformPointForFace(
   angles: FoldAngles,
 ): Point3D {
   const axes = resolveCreaseAxes(model, angles)
+  return transformPointWithAxes(model, faceId, point, angles, axes)
+}
 
+export function transformPointWithAxes(
+  model: OrigamiModelDefinition, faceId: string, point: Point3D, angles: FoldAngles,
+  axes: Record<string, ResolvedCreaseAxis>,
+): Point3D {
   return creasesForFace(model, faceId).reduce((transformedPoint, crease) => {
     const angle = signedFoldAngle(angles[crease.id] ?? 0, crease.direction)
     return rotatePointAroundAxis(transformedPoint, axes[crease.id], angle)
@@ -170,3 +254,4 @@ export function validateOrigamiModel(model: OrigamiModelDefinition): string[] {
 
   return errors
 }
+

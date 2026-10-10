@@ -11,8 +11,9 @@ export function supportsWebGL(
 
   try {
     const canvas = createCanvas()
-    return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'))
+    return Boolean(canvas.getContext('webgl2'))
   } catch {
     return false
   }
 }
+
