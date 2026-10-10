@@ -154,7 +154,8 @@ export function OrigamiScene({ model, steps, step, stepIndex, animate = true, sp
           <fog attach="fog" args={['#1b1725', 8, 15]} />
           <ambientLight intensity={0.55} />
           <hemisphereLight args={['#e5daff', '#6b5967', 0.9]} />
-          <directionalLight castShadow={!economical} position={[3.5, 6, 4]} intensity={2.3} shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
+          <directionalLight castShadow={!economical} position={[3.5, 6, 4]} intensity={2.3}
+            shadow-mapSize-width={1024} shadow-mapSize-height={1024} shadow-bias={-0.0002} shadow-normalBias={0.015} />
           <Suspense fallback={null}>
             <group position={[0, 0.12, 0]}>
               <OrigamiModel
