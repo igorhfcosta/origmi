@@ -53,17 +53,17 @@ function PaperFaceMesh({ face, layer, model, step, finish, highlighted, selected
   const meshRef = useRef<Mesh>(null)
   const { invalidate } = useThree()
   const reducedMotion = useReducedMotion()
-  const color = finish === false ? '#f7efe1' : face.color ?? '#f7efe1'
+  const color = highlighted ? '#f2b832' : finish === false ? '#f7efe1' : face.color ?? '#f7efe1'
   useEffect(() => {
     const material = materialRef.current
     if (!material) return
-    if (finish) material.color.set('#f7efe1')
+    if (finish && !highlighted) material.color.set('#f7efe1')
     const target = new Color(color)
     const tween = gsap.to(material.color, {
-      r: target.r, g: target.g, b: target.b, duration: reducedMotion || !finish ? 0 : 0.7 / speed, onUpdate: invalidate,
+      r: target.r, g: target.g, b: target.b, duration: reducedMotion || !finish || highlighted ? 0 : 0.7 / speed, onUpdate: invalidate,
     })
     return () => { tween.kill() }
-  }, [color, finish, invalidate, reducedMotion, replayToken, speed])
+  }, [color, finish, highlighted, invalidate, reducedMotion, replayToken, speed])
   const shape = useMemo(() => {
     const value = new Shape()
     face.vertices.forEach(([x, y], index) => index === 0 ? value.moveTo(x, y) : value.lineTo(x, y))
@@ -103,9 +103,9 @@ function GuideOverlay({ guide, axes, model, angles }: {
   const normal = new Vector3(-back.y, back.x, back.z).normalize().multiplyScalar(0.09)
   const head = [to.clone().add(back).add(normal), to, to.clone().add(back).sub(normal)]
   return <group>
-    <Line points={[axis.start, axis.end]} color="#b89bff" lineWidth={2} dashed dashSize={0.12} gapSize={0.08} depthTest={false} />
-    <Line points={[from, to]} color="#b89bff" lineWidth={3} depthTest={false} />
-    <Line points={head} color="#b89bff" lineWidth={3} depthTest={false} />
+    <Line points={[axis.start, axis.end]} color="#b89bff" lineWidth={2} dashed dashSize={0.12} gapSize={0.08} depthTest={false} depthWrite={false} renderOrder={30} />
+    <Line points={[from, to]} color="#b89bff" lineWidth={3} depthTest={false} depthWrite={false} renderOrder={30} />
+    <Line points={head} color="#b89bff" lineWidth={3} depthTest={false} depthWrite={false} renderOrder={30} />
   </group>
 }
 
