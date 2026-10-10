@@ -39,12 +39,49 @@ export interface OrigamiModelDefinition {
   creases: readonly CreaseDefinition[]
   foldOrder: readonly string[]
   decorations?: readonly FaceDecoration[]
+  mechanisms?: readonly SymmetricVertexMechanism[]
   source?: {
     format: 'FOLD'
     spec?: number
     title?: string
   }
 }
+
+/** Four panels with sector angles α, α, 180°−α, 180°−α. */
+export interface SymmetricVertexMechanism {
+  id: string
+  label: string
+  creases: readonly [string, string, string]
+  sectorAngle: number
+}
+
+export type VertexMode = 'book' | 'squash' | 'inside-reverse' | 'outside-reverse'
+
+export interface VertexAction {
+  mechanismId: string
+  mode: VertexMode
+  angle: number
+}
+
+export interface FoldPhase {
+  label: string
+  duration?: number
+  folds?: readonly FoldAction[]
+  vertex?: VertexAction
+}
+
+interface AnnotationBase {
+  id: string
+  faceId: string
+  label: string
+  color?: string
+}
+
+export type MathAnnotation =
+  | (AnnotationBase & { kind: 'point'; at: Point2D })
+  | (AnnotationBase & { kind: 'segment'; start: Point2D; end: Point2D; dashed?: boolean })
+  | (AnnotationBase & { kind: 'angle'; vertex: Point2D; from: Point2D; to: Point2D })
+  | (AnnotationBase & { kind: 'area' })
 
 export interface FoldAction {
   creaseId: string
@@ -57,6 +94,7 @@ export interface FoldGuide {
   creaseId: string
   arrowFrom: Point2D
   arrowTo: Point2D
+  faceId?: string
 }
 
 export interface CameraPose {
@@ -74,7 +112,12 @@ export interface TutorialStep {
   instruction: string
   showGuide: boolean
   fold?: FoldAction
+  phases?: readonly FoldPhase[]
   guide?: FoldGuide
   mathNote?: string
+  mathQuestion?: string
+  mathAnswer?: string
+  annotations?: readonly MathAnnotation[]
   camera?: CameraPose
 }
+

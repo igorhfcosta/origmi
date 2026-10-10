@@ -1,5 +1,8 @@
 import type { OrigamiModelDefinition, TutorialStep } from '../engine/types'
 import { dogModel, squarePracticeModel } from './origamiModel'
+import { heartModel } from './heartModel'
+import { heartSteps } from './heartTutorial'
+import { vertexLabModel, vertexLabSteps } from './vertexLab'
 import { squarePracticeSteps, tutorialSteps } from './tutorial'
 
 export interface OrigamiCatalogItem {
@@ -12,7 +15,7 @@ export interface OrigamiCatalogItem {
   foldCount: number
   model: OrigamiModelDefinition
   steps: readonly TutorialStep[]
-  accent: 'violet' | 'amber'
+  accent: 'violet' | 'amber' | 'rose'
 }
 
 export const origamiCatalog: readonly OrigamiCatalogItem[] = [
@@ -40,8 +43,22 @@ export const origamiCatalog: readonly OrigamiCatalogItem[] = [
     steps: squarePracticeSteps,
     accent: 'amber',
   },
+  {
+    id: 'coracao', title: 'Coração de origami',
+    subtitle: 'Crie um coração e investigue simetria, mediatriz e a diferença entre área de papel e silhueta.',
+    category: 'Figuras', difficulty: 'Fácil', estimatedMinutes: 8, foldCount: 8,
+    model: heartModel, steps: heartSteps, accent: 'rose',
+  },
+  {
+    id: 'laboratorio-dobras', title: 'Dobras coordenadas',
+    subtitle: 'Abra um bolso, experimente squash folds e compare inversões para dentro e para fora.',
+    category: 'Técnicas', difficulty: 'Médio', estimatedMinutes: 7, foldCount: 6,
+    model: vertexLabModel, steps: vertexLabSteps, accent: 'amber',
+  },
+
 ]
 
 export function findCatalogItem(id: string): OrigamiCatalogItem | undefined {
   return origamiCatalog.find((item) => item.id === id)
 }
+

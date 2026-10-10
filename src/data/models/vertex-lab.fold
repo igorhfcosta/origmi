@@ -1,0 +1,12 @@
+{
+  "file_spec": 1.2,
+  "file_creator": "OrigamiLab",
+  "file_title": "Laboratório de dobras coordenadas",
+  "file_classes": ["singleModel"],
+  "frame_classes": ["creasePattern"],
+  "frame_attributes": ["2D", "orientable", "convexFaces"],
+  "vertices_coords": [[0,0], [2,0], [2,2], [0,2], [-2,2], [-2,-2], [2,-2]],
+  "edges_vertices": [[0,1],[0,2],[0,3],[0,5],[1,2],[2,3],[3,4],[4,5],[5,6],[6,1]],
+  "edges_assignment": ["V","V","M","M","B","B","B","B","B","B"],
+  "faces_vertices": [[0,1,2],[0,2,3],[0,3,4,5],[0,5,6,1]]
+}

@@ -108,3 +108,53 @@ export const tutorialSteps: TutorialStep[] = [
     camera: { position: [0, 5.7, 1.35], target: [0, 0, -0.55], fov: 33, duration: 0.9 },
   },
 ]
+
+
+// Marks use coordinates on a material face, so they move with the paper.
+squarePracticeSteps[0].annotations = [
+  { id: 'square-side', kind: 'segment', faceId: 'face-0', start: [-2, -2], end: [2, -2], label: 'Lado: 4 u' },
+  { id: 'square-axis', kind: 'segment', faceId: 'face-0', start: [0, -2], end: [0, 2], label: 'Eixo de simetria', dashed: true },
+]
+squarePracticeSteps[0].mathQuestion = 'Que figuras aparecem ao dividir o quadrado pelo vinco central?'
+squarePracticeSteps[0].mathAnswer = 'Dois retângulos congruentes, cada um com metade da área do quadrado.'
+squarePracticeSteps[1].annotations = [
+  { id: 'moving-point', kind: 'point', faceId: 'face-1', at: [2, -2], label: 'Ponto em movimento' },
+  { id: 'matching-point', kind: 'point', faceId: 'face-0', at: [-2, -2], label: 'Ponto correspondente', color: '#88e5d3' },
+]
+squarePracticeSteps[1].mathQuestion = 'Por que os dois pontos coincidem no fim da dobra?'
+squarePracticeSteps[1].mathAnswer = 'Eles são simétricos em relação ao vinco: estão à mesma distância dele, em lados opostos.'
+squarePracticeSteps[2].annotations = [
+  { id: 'rectangle-side', kind: 'segment', faceId: 'face-0', start: [-2, -2], end: [0, -2], label: '2 u' },
+  { id: 'rectangle-height', kind: 'segment', faceId: 'face-0', start: [-2, -2], end: [-2, 0], label: '2 u' },
+]
+squarePracticeSteps[3].mathNote = 'As duas dobras reduzem a área da silhueta a um quarto da área inicial. A área total do papel permanece a mesma.'
+squarePracticeSteps[3].annotations = [
+  { id: 'horizontal-axis', kind: 'segment', faceId: 'face-2', start: [-2, 0], end: [0, 0], label: 'Segundo eixo', dashed: true },
+]
+squarePracticeSteps[4].annotations = [
+  { id: 'quarter-area', kind: 'area', faceId: 'face-3', label: 'Silhueta: 4 u²' },
+  { id: 'right-angle', kind: 'angle', faceId: 'face-3', vertex: [0, 0], from: [1, 0], to: [0, 1], label: '90°' },
+]
+squarePracticeSteps[4].mathQuestion = 'Se o lado foi dividido por 2, por quanto foi dividida a área da silhueta?'
+squarePracticeSteps[4].mathAnswer = 'Por 4: a área depende do quadrado do lado. O papel ainda tem área 16 u², distribuída em quatro camadas.'
+
+tutorialSteps[0].annotations = [
+  { id: 'dog-diagonal', kind: 'segment', faceId: 'face-0', start: [-2, 0], end: [2, 0], label: 'Diagonal', dashed: true },
+  { id: 'dog-corner-angle', kind: 'angle', faceId: 'face-2', vertex: [0, 2], from: [-1, 1], to: [1, 1], label: '90°' },
+]
+tutorialSteps[0].mathQuestion = 'Quais ângulos aparecem em cada triângulo formado pela diagonal?'
+tutorialSteps[0].mathAnswer = '45°, 45° e 90°. São triângulos retângulos isósceles: dois lados e dois ângulos são iguais.'
+tutorialSteps[1].annotations = [
+  { id: 'dog-axis', kind: 'segment', faceId: 'face-0', start: [-2, 0], end: [2, 0], label: 'Eixo de reflexão', dashed: true },
+]
+tutorialSteps[2].annotations = [
+  { id: 'left-ear-axis', kind: 'segment', faceId: 'face-1', start: [-0.194, 0], end: [-1.372, 0.628], label: 'Vinco da orelha', dashed: true },
+]
+tutorialSteps[3].annotations = [
+  { id: 'right-ear-axis', kind: 'segment', faceId: 'face-3', start: [0.194, 0], end: [1.372, 0.628], label: 'Vinco espelhado', dashed: true },
+]
+tutorialSteps[4].annotations = [
+  { id: 'dog-symmetry', kind: 'segment', faceId: 'face-2', start: [0, 0], end: [0, 2], label: 'Eixo de simetria', dashed: true },
+]
+tutorialSteps[4].mathQuestion = 'As orelhas são iguais apenas porque têm a mesma área?'
+tutorialSteps[4].mathAnswer = 'Não. Elas são congruentes: uma pode coincidir com a outra por reflexão, preservando lados e ângulos.'

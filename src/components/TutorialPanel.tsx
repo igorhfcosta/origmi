@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { ArrowLeft, ArrowRight, RotateCcw, Sigma } from 'lucide-react'
 import { canReplayFold } from '../engine/origamiEngine'
 import type { PlaybackSpeed, TutorialStep } from '../engine/types'
@@ -12,6 +13,8 @@ interface TutorialPanelProps {
 
 export function TutorialPanel({ step, steps }: TutorialPanelProps) {
   const { currentStep, speed, mathMode, nextStep, previousStep, replayStep, setSpeed, toggleMathMode, reset } = useTutorialStore()
+  const [reveal, setReveal] = useState(false)
+  useEffect(() => setReveal(false), [step.id])
   const progress = ((currentStep + 1) / steps.length) * 100
   const isFinalStep = currentStep === steps.length - 1
 
@@ -36,6 +39,13 @@ export function TutorialPanel({ step, steps }: TutorialPanelProps) {
         </span>
       </button>
 
+      {mathMode && <div className="math-exploration">
+        {step.annotations?.length ? <p className="math-legend">As marcações acompanham o papel durante a dobra.</p> : null}
+        {step.mathQuestion && <><strong>Investigue</strong><p>{step.mathQuestion}</p>
+          {step.mathAnswer && <><button type="button" aria-expanded={reveal} onClick={() => setReveal(!reveal)}>{reveal ? 'Ocultar explicação' : 'Conferir explicação'}</button>
+            {reveal && <p className="math-answer">{step.mathAnswer}</p>}</>}</>}
+      </div>}
+
       <div className="speed-row">
         <span>Velocidade</span>
         <div className="speed-control" aria-label="Velocidade da animação">
@@ -55,3 +65,4 @@ export function TutorialPanel({ step, steps }: TutorialPanelProps) {
     </aside>
   )
 }
+

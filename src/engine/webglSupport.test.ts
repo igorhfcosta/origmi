@@ -6,8 +6,8 @@ describe('supportsWebGL', () => {
     expect(supportsWebGL(() => ({ getContext: (id) => id === 'webgl2' ? {} : null }))).toBe(true)
   })
 
-  it('falls back to WebGL 1', () => {
-    expect(supportsWebGL(() => ({ getContext: (id) => id === 'webgl' ? {} : null }))).toBe(true)
+  it('rejects WebGL 1 because the renderer requires WebGL 2', () => {
+    expect(supportsWebGL(() => ({ getContext: (id) => id === 'webgl' ? {} : null }))).toBe(false)
   })
 
   it('rejects unsupported and failing contexts safely', () => {
@@ -15,3 +15,4 @@ describe('supportsWebGL', () => {
     expect(supportsWebGL(() => ({ getContext: () => { throw new Error('blocked') } }))).toBe(false)
   })
 })
+

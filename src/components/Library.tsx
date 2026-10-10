@@ -1,4 +1,4 @@
-import { ArrowRight, Clock3, Origami, Shapes } from 'lucide-react'
+import { ArrowRight, Clock3, Heart, Origami, Shapes } from 'lucide-react'
 import type { OrigamiCatalogItem } from '../data/catalog'
 
 interface LibraryProps {
@@ -28,7 +28,7 @@ export function Library({ items, onOpen }: LibraryProps) {
           {items.map((item) => (
             <article className={`origami-card ${item.accent}`} key={item.id}>
               <div className="origami-card-preview" aria-hidden="true">
-                {item.category === 'Animais' ? <Origami size={58} strokeWidth={1.25} /> : <Shapes size={58} strokeWidth={1.25} />}
+                {item.id === 'coracao' ? <Heart size={58} strokeWidth={1.25} /> : item.category === 'Animais' ? <Origami size={58} strokeWidth={1.25} /> : <Shapes size={58} strokeWidth={1.25} />}
                 <span>{item.foldCount} {item.foldCount === 1 ? 'dobra' : 'dobras'}</span>
               </div>
               <div className="origami-card-body">
@@ -53,3 +53,4 @@ export function Library({ items, onOpen }: LibraryProps) {
     </main>
   )
 }
+
