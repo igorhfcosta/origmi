@@ -82,7 +82,7 @@ function PaperFaceMesh({ face, layer, model, step, finish, highlighted, selected
       <meshStandardMaterial ref={materialRef} color={color} emissive={selected ? '#72e3d3' : '#eeb64b'}
         emissiveIntensity={selected ? 0.5 : highlighted ? 0.65 : 0} roughness={0.9} side={DoubleSide}
         polygonOffset polygonOffsetFactor={-layer} polygonOffsetUnits={-layer} />
-      <Edges color={highlighted ? '#ffce71' : selected ? '#7ce9d9' : '#6e6678'} threshold={15} depthTest={false} />
+      <Edges color={highlighted ? '#ffce71' : selected ? '#7ce9d9' : '#6e6678'} threshold={15} depthTest={false} depthWrite={false} />
     </mesh>
     {finish !== false && model.decorations?.filter((d) => d.faceId === face.id)
       .map((decoration, order) => <AnimatedDecoration key={`${decoration.id}-${replayToken}`} decoration={decoration} order={order} speed={speed} />)}
